@@ -1,0 +1,9 @@
+terraform/.terraform/
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.backup
+ansible/inventory/tf_outputs.json
+ansible/group_vars/secrets.yml
+*.pem
+*.log
+.terraform.lock.hcl
