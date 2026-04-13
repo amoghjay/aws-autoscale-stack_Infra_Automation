@@ -1,0 +1,13 @@
+[Unit]
+Description=Flask App (aws-autoscale-stack)
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/flask
+ExecStart=/usr/bin/python3 -m gunicorn -w 2 -b 0.0.0.0:{{ flask_port }} app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

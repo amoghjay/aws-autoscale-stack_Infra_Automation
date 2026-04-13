@@ -1,0 +1,32 @@
+from flask import Flask, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+@app.route('/items')
+def get_items():
+    conn = None
+    try:
+        conn = mysql.connector.connect(
+            host='{{ db_host }}',
+            user='{{ db_user }}',
+            password='{{ db_pass }}',
+            database='{{ db_name }}'
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM items;")
+        rows = cursor.fetchall()
+        cursor.close()
+        return jsonify([r[0] for r in rows])
+    except mysql.connector.Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok"}), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port={{ flask_port }})

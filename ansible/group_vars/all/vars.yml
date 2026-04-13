@@ -1,0 +1,16 @@
+# Populated from: cd ../terraform && terraform output -json > ../ansible/inventory/tf_outputs.json
+
+alb_dns: "{{ (lookup('file', playbook_dir + '/inventory/tf_outputs.json') | from_json).alb_dns_name.value }}"
+db_host: "{{ (lookup('file', playbook_dir + '/inventory/tf_outputs.json') | from_json).db_endpoint.value }}"
+db_name: "appdb"
+db_user: "admin"
+db_pass: "{{ vault_db_pass }}"
+flask_port: 5000
+
+# SSM connection — no SSH, no key pairs, no open port 22
+ansible_connection: amazon.aws.aws_ssm
+ansible_aws_ssm_bucket_name: aws-autoscale-stack-tf-state-amogh
+ansible_aws_ssm_region: us-east-1
+ansible_aws_ssm_s3_addressing_style: virtual
+ansible_python_interpreter: /usr/bin/python3
+ansible_remote_tmp: /tmp/.ansible/tmp

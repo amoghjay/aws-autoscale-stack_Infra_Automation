@@ -1,0 +1,20 @@
+---
+- name: Configure Nginx frontend
+  hosts: role_nginx
+  become: true
+  roles:
+    - frontend
+
+- name: Configure Flask app tier
+  hosts: role_app
+  become: true
+  roles:
+    - app
+
+# run_once ensures this runs on exactly one app instance regardless of inventory order
+- name: Seed database (runs on one app instance only)
+  hosts: role_app
+  become: true
+  run_once: true
+  roles:
+    - db_init

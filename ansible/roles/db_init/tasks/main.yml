@@ -1,0 +1,23 @@
+---
+- name: Install MySQL client
+  ansible.builtin.dnf:
+    name: mariadb105
+    state: present
+
+- name: Copy seed SQL to instance
+  ansible.builtin.copy:
+    src: seed.sql
+    dest: /tmp/seed.sql
+    mode: '0600'
+
+- name: Run seed SQL against RDS
+  ansible.builtin.shell: >
+    mysql -h {{ db_host }} -u {{ db_user }} {{ db_name }} < /tmp/seed.sql
+  environment:
+    MYSQL_PWD: "{{ db_pass }}"
+  no_log: true
+
+- name: Remove seed SQL from instance
+  ansible.builtin.file:
+    path: /tmp/seed.sql
+    state: absent

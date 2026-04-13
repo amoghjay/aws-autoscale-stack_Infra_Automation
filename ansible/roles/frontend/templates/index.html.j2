@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>aws-autoscale-stack</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+    h1 { color: #333; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Items from DB</h1>
+  <ul id="items"><li>Loading...</li></ul>
+  <script>
+    fetch('/api/items')
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + r.statusText);
+        return r.json();
+      })
+      .then(data => {
+        const ul = document.getElementById('items');
+        ul.innerHTML = '';
+        data.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+      })
+      .catch(err => {
+        document.getElementById('items').innerHTML =
+          '<li class="error">Error: ' + err.message + '</li>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
