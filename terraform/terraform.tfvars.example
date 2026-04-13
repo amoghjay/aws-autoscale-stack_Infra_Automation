@@ -1,0 +1,7 @@
+# Copy this to terraform.tfvars and fill in your values
+# terraform.tfvars is in .gitignore — never commit it
+
+aws_region   = "us-east-1"
+project_name = "aws-autoscale-stack"
+db_username  = "admin"
+db_password  = "ChangeMe123!"
