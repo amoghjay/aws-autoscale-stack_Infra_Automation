@@ -1,9 +1,28 @@
+# Terraform
 terraform/.terraform/
 terraform/terraform.tfvars
 terraform/*.tfstate
 terraform/*.tfstate.backup
+terraform/*.pkg
+.terraform.lock.hcl
+
+# Ansible
 ansible/inventory/tf_outputs.json
 ansible/group_vars/secrets.yml
+ansible/group_vars/all/vault.yml
+.vault_pass
+vault_pass.txt
+*.retry
+
+# App / Scripts
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+node_modules/
+
+# General
 *.pem
 *.log
-.terraform.lock.hcl
+.DS_Store

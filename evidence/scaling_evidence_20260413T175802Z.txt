@@ -1,0 +1,1138 @@
+
+========================================
+Collected: 2026-04-13T17:58:05Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:00:32.019000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:00:30.117000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-03c4e13c644e68b5c |  5000 |  draining   |
+|  i-002985c3157334b51 |  5000 |  unhealthy  |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+-------------------+----------------------+-----------------------------+----------+|
+||      Average      |       Maximum        |          Timestamp          |  Unit    ||
+|+-------------------+----------------------+-----------------------------+----------+|
+||  2.156534070085907|  18.275              |  2026-04-13T17:55:00+00:00  |  Percent ||
+||  0.90653648990509 |  10.249450476253914  |  2026-04-13T17:50:00+00:00  |  Percent ||
+|+-------------------+----------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+-------------------------------------------------
+|              GetMetricStatistics              |
++----------------+------------------------------+
+|  Label         |  RequestCount                |
++----------------+------------------------------+
+||                 Datapoints                  ||
+|+-----+-----------------------------+---------+|
+|| Sum |          Timestamp          |  Unit   ||
+|+-----+-----------------------------+---------+|
+||  0.0|  2026-04-13T17:48:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0|  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:52:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:50:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:49:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-----+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T17:58:43Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:00:32.019000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:00:30.117000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-03c4e13c644e68b5c |  5000 |  draining   |
+|  i-002985c3157334b51 |  5000 |  unhealthy  |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+----------------------------------------------------------------------------------------
+|                                  GetMetricStatistics                                 |
++---------------------------+----------------------------------------------------------+
+|  Label                    |  CPUUtilization                                          |
++---------------------------+----------------------------------------------------------+
+||                                     Datapoints                                     ||
+|+--------------------+----------------------+-----------------------------+----------+|
+||       Average      |       Maximum        |          Timestamp          |  Unit    ||
+|+--------------------+----------------------+-----------------------------+----------+|
+||  1.9650690993366164|  18.275              |  2026-04-13T17:55:00+00:00  |  Percent ||
+||  0.90653648990509  |  10.249450476253914  |  2026-04-13T17:50:00+00:00  |  Percent ||
+|+--------------------+----------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+-------------------------------------------------
+|              GetMetricStatistics              |
++----------------+------------------------------+
+|  Label         |  RequestCount                |
++----------------+------------------------------+
+||                 Datapoints                  ||
+|+-----+-----------------------------+---------+|
+|| Sum |          Timestamp          |  Unit   ||
+|+-----+-----------------------------+---------+|
+||  0.0|  2026-04-13T17:48:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0|  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:52:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:50:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:49:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-----+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T17:59:21Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:00:32.019000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:00:30.117000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-03c4e13c644e68b5c |  5000 |  draining   |
+|  i-002985c3157334b51 |  5000 |  unhealthy  |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+----------------------------------------------------------------------------------------
+|                                  GetMetricStatistics                                 |
++---------------------------+----------------------------------------------------------+
+|  Label                    |  CPUUtilization                                          |
++---------------------------+----------------------------------------------------------+
+||                                     Datapoints                                     ||
+|+--------------------+----------------------+-----------------------------+----------+|
+||       Average      |       Maximum        |          Timestamp          |  Unit    ||
+|+--------------------+----------------------+-----------------------------+----------+|
+||  1.5487792709542672|  18.275              |  2026-04-13T17:55:00+00:00  |  Percent ||
+||  0.90653648990509  |  10.249450476253914  |  2026-04-13T17:50:00+00:00  |  Percent ||
+|+--------------------+----------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+-------------------------------------------------
+|              GetMetricStatistics              |
++----------------+------------------------------+
+|  Label         |  RequestCount                |
++----------------+------------------------------+
+||                 Datapoints                  ||
+|+-----+-----------------------------+---------+|
+|| Sum |          Timestamp          |  Unit   ||
+|+-----+-----------------------------+---------+|
+||  0.0|  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0|  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:52:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:50:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:49:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-----+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:00:00Z
+========================================
+
+=== ASG Scaling Activities ===
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                      DescribeScalingActivities                                                                      |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|                                                       Cause                                                      |   Status    |               Time                 |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  InProgress |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T22:06:28.592000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T22:00:32.019000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T22:00:30.117000+00:00  |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  unhealthy  |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+--------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                |
++---------------------------+--------------------------------------------------------+
+|  Label                    |  CPUUtilization                                        |
++---------------------------+--------------------------------------------------------+
+||                                    Datapoints                                    ||
+|+------------------+----------------------+-----------------------------+----------+|
+||      Average     |       Maximum        |          Timestamp          |  Unit    ||
+|+------------------+----------------------+-----------------------------+----------+|
+||  1.36617230239982|  18.275              |  2026-04-13T17:55:00+00:00  |  Percent ||
+||  0.90653648990509|  10.249450476253914  |  2026-04-13T17:50:00+00:00  |  Percent ||
+|+------------------+----------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+-------------------------------------------------
+|              GetMetricStatistics              |
++----------------+------------------------------+
+|  Label         |  RequestCount                |
++----------------+------------------------------+
+||                 Datapoints                  ||
+|+-----+-----------------------------+---------+|
+|| Sum |          Timestamp          |  Unit   ||
+|+-----+-----------------------------+---------+|
+||  0.0|  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0|  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:52:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:50:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0|  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-----+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:00:40Z
+========================================
+
+=== ASG Scaling Activities ===
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                      DescribeScalingActivities                                                                      |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|                                                       Cause                                                      |   Status    |               Time                 |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T22:06:28.592000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T22:00:32.019000+00:00  |
+|  At 2026-04-12T22:00:30Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T22:00:30.117000+00:00  |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  2          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  unhealthy  |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+--------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                |
++---------------------------+--------------------------------------------------------+
+|  Label                    |  CPUUtilization                                        |
++---------------------------+--------------------------------------------------------+
+||                                    Datapoints                                    ||
+|+------------------+----------------------+-----------------------------+----------+|
+||      Average     |       Maximum        |          Timestamp          |  Unit    ||
+|+------------------+----------------------+-----------------------------+----------+|
+||  1.36617230239982|  18.275              |  2026-04-13T17:55:00+00:00  |  Percent ||
+||  0.90653648990509|  10.249450476253914  |  2026-04-13T17:50:00+00:00  |  Percent ||
+|+------------------+----------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+---------------------------------------------------
+|               GetMetricStatistics               |
++----------------+--------------------------------+
+|  Label         |  RequestCount                  |
++----------------+--------------------------------+
+||                  Datapoints                   ||
+|+-------+-----------------------------+---------+|
+||  Sum  |          Timestamp          |  Unit   ||
+|+-------+-----------------------------+---------+|
+||  0.0  |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0  |  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:52:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:50:00+00:00  |  Count  ||
+||  146.0|  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:01:23Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+---------------------------------------------
+|           DescribeTargetHealth            |
++----------------------+-------+------------+
+|       Instance       | Port  |   State    |
++----------------------+-------+------------+
+|  i-0c87a4ea05788ef59 |  5000 |  initial   |
+|  i-050a1f949f84e774d |  5000 |  healthy   |
+|  i-002985c3157334b51 |  5000 |  draining  |
++----------------------+-------+------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||       Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||  28.416584545726938|  75.15833333333333  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982  |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+--------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+---------------------------------------------------
+|               GetMetricStatistics               |
++----------------+--------------------------------+
+|  Label         |  RequestCount                  |
++----------------+--------------------------------+
+||                  Datapoints                   ||
+|+-------+-----------------------------+---------+|
+||  Sum  |          Timestamp          |  Unit   ||
+|+-------+-----------------------------+---------+|
+||  0.0  |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:53:00+00:00  |  Count  ||
+||  1.0  |  2026-04-13T17:51:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:52:00+00:00  |  Count  ||
+||  146.0|  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0  |  2026-04-13T17:54:00+00:00  |  Count  ||
+|+-------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:02:05Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  draining   |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+--------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                |
++---------------------------+--------------------------------------------------------+
+|  Label                    |  CPUUtilization                                        |
++---------------------------+--------------------------------------------------------+
+||                                    Datapoints                                    ||
+|+-------------------+---------------------+-----------------------------+----------+|
+||      Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+-------------------+---------------------+-----------------------------+----------+|
+||  17.07513153642638|  75.15833333333333  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982 |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+-------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:53:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:52:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:54:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:02:50Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  draining   |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+--------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                |
++---------------------------+--------------------------------------------------------+
+|  Label                    |  CPUUtilization                                        |
++---------------------------+--------------------------------------------------------+
+||                                    Datapoints                                    ||
+|+-------------------+---------------------+-----------------------------+----------+|
+||      Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+-------------------+---------------------+-----------------------------+----------+|
+||  22.91095536928619|  77.32336436148069  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982 |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+-------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  4560.0|  2026-04-13T18:01:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:53:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:52:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:54:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:03:32Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  draining   |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||       Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||  26.124798319928367|  77.74367357832753  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982  |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+--------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  4560.0|  2026-04-13T18:01:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:53:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  4624.0|  2026-04-13T18:02:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:54:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:04:28Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  draining   |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||       Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||  28.271865631293803|  77.90618287179657  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982  |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+--------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  4560.0|  2026-04-13T18:01:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  4624.0|  2026-04-13T18:02:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:54:00+00:00  |  Count  ||
+||  4644.0|  2026-04-13T18:03:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:05:16Z
+========================================
+
+=== ASG Scaling Activities ===
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                 DescribeScalingActivities                                                                                |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|                                                       Cause                                                      |             Status               |               Time                 |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  WaitingForELBConnectionDraining |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful                      |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful                      |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+----------------------------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
+|  i-002985c3157334b51 |  5000 |  draining   |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||       Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||  24.256257362570516|  77.90618287179657  |  2026-04-13T18:00:00+00:00  |  Percent ||
+||  1.36617230239982  |  18.275             |  2026-04-13T17:55:00+00:00  |  Percent ||
+|+--------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  4560.0|  2026-04-13T18:01:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:55:00+00:00  |  Count  ||
+||  4599.0|  2026-04-13T18:04:00+00:00  |  Count  ||
+||  4624.0|  2026-04-13T18:02:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  4644.0|  2026-04-13T18:03:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:05:58Z
+========================================
+
+=== ASG Scaling Activities ===
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                      DescribeScalingActivities                                                                      |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|                                                       Cause                                                      |   Status    |               Time                 |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+|  At 2026-04-13T18:00:58Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T18:01:00.111000+00:00  |
+|  At 2026-04-13T18:00:58Z an instance was taken out of service in response to an ELB system health check failure. |  InProgress |  2026-04-13T18:00:58.237000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:55:02.403000+00:00  |
+|  At 2026-04-13T17:55:00Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:55:00.502000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:49:05.087000+00:00  |
+|  At 2026-04-13T17:49:03Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:49:03.203000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-13T17:43:06.445000+00:00  |
+|  At 2026-04-13T17:43:04Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-13T17:43:04.511000+00:00  |
+|  At 2026-04-12T23:38:15Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:38:16.854000+00:00  |
+|  At 2026-04-12T23:38:14Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:38:14.922000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:32:18.579000+00:00  |
+|  At 2026-04-12T23:32:16Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:32:16.826000+00:00  |
+|  At 2026-04-12T23:26:18Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:26:19.709000+00:00  |
+|  At 2026-04-12T23:26:17Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:26:17.931000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:20:21.911000+00:00  |
+|  At 2026-04-12T23:20:19Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:20:19.868000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T23:14:22.991000+00:00  |
+|  At 2026-04-12T23:14:21Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T23:14:21.104000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was launched in response to an unhealthy instance needing to be replaced.   |  Successful |  2026-04-12T22:06:30.398000+00:00  |
+|  At 2026-04-12T22:06:28Z an instance was taken out of service in response to an ELB system health check failure. |  Successful |  2026-04-12T22:06:28.592000+00:00  |
++------------------------------------------------------------------------------------------------------------------+-------------+------------------------------------+
+
+=== ASG Instance Count ===
+----------------------------------------
+|       DescribeAutoScalingGroups      |
++----------+-------------+------+------+
+|  Desired |  Instances  | Max  | Min  |
++----------+-------------+------+------+
+|  2       |  3          |  6   |  2   |
++----------+-------------+------+------+
+
+=== ALB Target Health ===
+----------------------------------------------
+|            DescribeTargetHealth            |
++----------------------+-------+-------------+
+|       Instance       | Port  |    State    |
++----------------------+-------+-------------+
+|  i-0c87a4ea05788ef59 |  5000 |  unhealthy  |
+|  i-050a1f949f84e774d |  5000 |  healthy    |
++----------------------+-------+-------------+
+
+=== CloudWatch CPUUtilization (ASG) ===
+---------------------------------------------------------------------------------------
+|                                 GetMetricStatistics                                 |
++---------------------------+---------------------------------------------------------+
+|  Label                    |  CPUUtilization                                         |
++---------------------------+---------------------------------------------------------+
+||                                    Datapoints                                     ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||       Average      |       Maximum       |          Timestamp          |  Unit    ||
+|+--------------------+---------------------+-----------------------------+----------+|
+||  33.39571484268771 |  66.55833333333332  |  2026-04-13T18:05:00+00:00  |  Percent ||
+||  24.256257362570516|  77.90618287179657  |  2026-04-13T18:00:00+00:00  |  Percent ||
+|+--------------------+---------------------+-----------------------------+----------+|
+
+=== CloudWatch RequestCount (ALB) ===
+----------------------------------------------------
+|                GetMetricStatistics               |
++-----------------+--------------------------------+
+|  Label          |  RequestCount                  |
++-----------------+--------------------------------+
+||                   Datapoints                   ||
+|+--------+-----------------------------+---------+|
+||   Sum  |          Timestamp          |  Unit   ||
+|+--------+-----------------------------+---------+|
+||  4560.0|  2026-04-13T18:01:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:57:00+00:00  |  Count  ||
+||  4359.0|  2026-04-13T18:00:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:56:00+00:00  |  Count  ||
+||  146.0 |  2026-04-13T17:59:00+00:00  |  Count  ||
+||  4599.0|  2026-04-13T18:04:00+00:00  |  Count  ||
+||  4624.0|  2026-04-13T18:02:00+00:00  |  Count  ||
+||  0.0   |  2026-04-13T17:58:00+00:00  |  Count  ||
+||  4644.0|  2026-04-13T18:03:00+00:00  |  Count  ||
+|+--------+-----------------------------+---------+|
+
+=== CloudWatch HealthyHostCount (ALB target group) ===
+-------------------------------
+|     GetMetricStatistics     |
++--------+--------------------+
+|  Label |  HealthyHostCount  |
++--------+--------------------+
+
+========================================
+Collected: 2026-04-13T18:06:43Z
+========================================
+
+=== ASG Scaling Activities ===
