@@ -5,6 +5,9 @@ events {
 http {
     server_tokens off;
     gzip on;
+    # Re-resolve the ALB hostname periodically because ALB IPs can rotate.
+    resolver 169.254.169.253 valid=30s ipv6=off;
+    resolver_timeout 5s;
 
     server {
         listen 80;
@@ -16,8 +19,10 @@ http {
 
         # Proxy /api/* to ALB — strips /api prefix (ALB serves at /)
         location /api/ {
-            proxy_pass http://{{ alb_dns }}/;
-            proxy_set_header Host $host;
+            set $alb_host "{{ alb_dns }}";
+            rewrite ^/api/?(.*)$ /$1 break;
+            proxy_pass http://$alb_host;
+            proxy_set_header Host $alb_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
