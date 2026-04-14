@@ -1,0 +1,239 @@
+=== ASG ===
+# module.asg.aws_autoscaling_group.app:
+resource "aws_autoscaling_group" "app" {
+    arn                              = "arn:aws:autoscaling:us-east-1:623675319678:autoScalingGroup:3d3ff641-3b47-4883-b8c3-7b3f770b4b4a:autoScalingGroupName/aws-autoscale-stack-asg"
+    availability_zones               = [
+        "us-east-1a",
+        "us-east-1b",
+    ]
+    capacity_rebalance               = false
+    context                          = [90mnull[0m[0m
+    default_cooldown                 = 300
+    default_instance_warmup          = 0
+    desired_capacity                 = 2
+    desired_capacity_type            = [90mnull[0m[0m
+    enabled_metrics                  = [
+        "GroupDesiredCapacity",
+        "GroupInServiceInstances",
+        "GroupPendingInstances",
+        "GroupTerminatingInstances",
+        "GroupTotalInstances",
+    ]
+    force_delete                     = false
+    force_delete_warm_pool           = false
+    health_check_grace_period        = 300
+    health_check_type                = "ELB"
+    id                               = "aws-autoscale-stack-asg"
+    ignore_failed_scaling_activities = false
+    launch_configuration             = [90mnull[0m[0m
+    load_balancers                   = []
+    max_instance_lifetime            = 0
+    max_size                         = 6
+    metrics_granularity              = "1Minute"
+    min_size                         = 2
+    name                             = "aws-autoscale-stack-asg"
+    name_prefix                      = [90mnull[0m[0m
+    placement_group                  = [90mnull[0m[0m
+    predicted_capacity               = 0
+    protect_from_scale_in            = false
+    service_linked_role_arn          = "arn:aws:iam::623675319678:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+    suspended_processes              = []
+    target_group_arns                = [
+        "arn:aws:elasticloadbalancing:us-east-1:623675319678:targetgroup/aws-autoscale-stack-flask-tg/2885b5b6665a1e00",
+    ]
+    termination_policies             = []
+    vpc_zone_identifier              = [
+        "subnet-08a6c0e0866c890d6",
+        "subnet-0ecf57474fd305ab1",
+    ]
+    wait_for_capacity_timeout        = "10m"
+    warm_pool_size                   = 0
+
+    availability_zone_distribution {
+        capacity_distribution_strategy = "balanced-best-effort"
+    }
+
+    capacity_reservation_specification {
+        capacity_reservation_preference = "default"
+    }
+
+    launch_template {
+        id      = "lt-094ae91399b05caef"
+        name    = "aws-autoscale-stack-lt-20260412213615092000000005"
+        version = "$Latest"
+    }
+
+    tag {
+        key                 = "Name"
+        propagate_at_launch = true
+        value               = "aws-autoscale-stack-app"
+    }
+    tag {
+        key                 = "Role"
+        propagate_at_launch = true
+        value               = "app"
+    }
+
+    traffic_source {
+        identifier = "arn:aws:elasticloadbalancing:us-east-1:623675319678:targetgroup/aws-autoscale-stack-flask-tg/2885b5b6665a1e00"
+        type       = "elbv2"
+    }
+}
+
+=== Launch Template ===
+# module.asg.aws_launch_template.app:
+resource "aws_launch_template" "app" {
+    arn                                  = "arn:aws:ec2:us-east-1:623675319678:launch-template/lt-094ae91399b05caef"
+    default_version                      = 1
+    description                          = [90mnull[0m[0m
+    disable_api_stop                     = false
+    disable_api_termination              = false
+    ebs_optimized                        = [90mnull[0m[0m
+    id                                   = "lt-094ae91399b05caef"
+    image_id                             = "ami-098e39bafa7e7303d"
+    instance_initiated_shutdown_behavior = [90mnull[0m[0m
+    instance_type                        = "t3.micro"
+    kernel_id                            = [90mnull[0m[0m
+    key_name                             = [90mnull[0m[0m
+    latest_version                       = 4
+    name                                 = "aws-autoscale-stack-lt-20260412213615092000000005"
+    name_prefix                          = "aws-autoscale-stack-lt-"
+    ram_disk_id                          = [90mnull[0m[0m
+    security_group_names                 = []
+    tags                                 = {}
+    tags_all                             = {}
+    user_data                            = (sensitive value)
+    vpc_security_group_ids               = []
+
+    iam_instance_profile {
+        arn  = [90mnull[0m[0m
+        name = "aws-autoscale-stack-ec2-profile"
+    }
+
+    network_interfaces {
+        associate_carrier_ip_address = [90mnull[0m[0m
+        associate_public_ip_address  = "false"
+        delete_on_termination        = [90mnull[0m[0m
+        description                  = [90mnull[0m[0m
+        device_index                 = 0
+        interface_type               = [90mnull[0m[0m
+        ipv4_address_count           = 0
+        ipv4_addresses               = []
+        ipv4_prefix_count            = 0
+        ipv4_prefixes                = []
+        ipv6_address_count           = 0
+        ipv6_addresses               = []
+        ipv6_prefix_count            = 0
+        ipv6_prefixes                = []
+        network_card_index           = 0
+        network_interface_id         = [90mnull[0m[0m
+        primary_ipv6                 = [90mnull[0m[0m
+        private_ip_address           = [90mnull[0m[0m
+        security_groups              = [
+            "sg-0e4eb167737d8915a",
+        ]
+        subnet_id                    = [90mnull[0m[0m
+    }
+
+    tag_specifications {
+        resource_type = "instance"
+        tags          = {
+            "Name" = "aws-autoscale-stack-app"
+            "Role" = "app"
+        }
+    }
+}
+
+=== Scale Out Policy ===
+# module.asg.aws_autoscaling_policy.scale_out:
+resource "aws_autoscaling_policy" "scale_out" {
+    adjustment_type           = "ChangeInCapacity"
+    arn                       = "arn:aws:autoscaling:us-east-1:623675319678:scalingPolicy:39563b8c-8b11-4411-ad56-12dc036b7c54:autoScalingGroupName/aws-autoscale-stack-asg:policyName/aws-autoscale-stack-scale-out"
+    autoscaling_group_name    = "aws-autoscale-stack-asg"
+    cooldown                  = 180
+    enabled                   = true
+    estimated_instance_warmup = 0
+    id                        = "aws-autoscale-stack-scale-out"
+    metric_aggregation_type   = [90mnull[0m[0m
+    min_adjustment_magnitude  = 0
+    name                      = "aws-autoscale-stack-scale-out"
+    policy_type               = "SimpleScaling"
+    scaling_adjustment        = 1
+}
+
+=== Scale In Policy ===
+# module.asg.aws_autoscaling_policy.scale_in:
+resource "aws_autoscaling_policy" "scale_in" {
+    adjustment_type           = "ChangeInCapacity"
+    arn                       = "arn:aws:autoscaling:us-east-1:623675319678:scalingPolicy:d36ad593-ec2e-4cb2-9d68-5b8adcfae229:autoScalingGroupName/aws-autoscale-stack-asg:policyName/aws-autoscale-stack-scale-in"
+    autoscaling_group_name    = "aws-autoscale-stack-asg"
+    cooldown                  = 180
+    enabled                   = true
+    estimated_instance_warmup = 0
+    id                        = "aws-autoscale-stack-scale-in"
+    metric_aggregation_type   = [90mnull[0m[0m
+    min_adjustment_magnitude  = 0
+    name                      = "aws-autoscale-stack-scale-in"
+    policy_type               = "SimpleScaling"
+    scaling_adjustment        = -1
+}
+
+=== CPU High Alarm ===
+# module.asg.aws_cloudwatch_metric_alarm.cpu_high:
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+    actions_enabled                       = true
+    alarm_actions                         = [
+        "arn:aws:autoscaling:us-east-1:623675319678:scalingPolicy:39563b8c-8b11-4411-ad56-12dc036b7c54:autoScalingGroupName/aws-autoscale-stack-asg:policyName/aws-autoscale-stack-scale-out",
+    ]
+    alarm_description                     = "Scale out by 1 when ASG average CPU stays above 20%"
+    alarm_name                            = "aws-autoscale-stack-cpu-high"
+    arn                                   = "arn:aws:cloudwatch:us-east-1:623675319678:alarm:aws-autoscale-stack-cpu-high"
+    comparison_operator                   = "GreaterThanThreshold"
+    datapoints_to_alarm                   = 0
+    dimensions                            = {
+        "AutoScalingGroupName" = "aws-autoscale-stack-asg"
+    }
+    evaluate_low_sample_count_percentiles = [90mnull[0m[0m
+    evaluation_periods                    = 2
+    extended_statistic                    = [90mnull[0m[0m
+    id                                    = "aws-autoscale-stack-cpu-high"
+    metric_name                           = "CPUUtilization"
+    namespace                             = "AWS/EC2"
+    period                                = 60
+    statistic                             = "Average"
+    tags_all                              = {}
+    threshold                             = 20
+    threshold_metric_id                   = [90mnull[0m[0m
+    treat_missing_data                    = "missing"
+    unit                                  = [90mnull[0m[0m
+}
+
+=== CPU Low Alarm ===
+# module.asg.aws_cloudwatch_metric_alarm.cpu_low:
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+    actions_enabled                       = true
+    alarm_actions                         = [
+        "arn:aws:autoscaling:us-east-1:623675319678:scalingPolicy:d36ad593-ec2e-4cb2-9d68-5b8adcfae229:autoScalingGroupName/aws-autoscale-stack-asg:policyName/aws-autoscale-stack-scale-in",
+    ]
+    alarm_description                     = "Scale in by 1 when ASG average CPU stays below 10%"
+    alarm_name                            = "aws-autoscale-stack-cpu-low"
+    arn                                   = "arn:aws:cloudwatch:us-east-1:623675319678:alarm:aws-autoscale-stack-cpu-low"
+    comparison_operator                   = "LessThanThreshold"
+    datapoints_to_alarm                   = 0
+    dimensions                            = {
+        "AutoScalingGroupName" = "aws-autoscale-stack-asg"
+    }
+    evaluate_low_sample_count_percentiles = [90mnull[0m[0m
+    evaluation_periods                    = 3
+    extended_statistic                    = [90mnull[0m[0m
+    id                                    = "aws-autoscale-stack-cpu-low"
+    metric_name                           = "CPUUtilization"
+    namespace                             = "AWS/EC2"
+    period                                = 60
+    statistic                             = "Average"
+    tags_all                              = {}
+    threshold                             = 10
+    threshold_metric_id                   = [90mnull[0m[0m
+    treat_missing_data                    = "missing"
+    unit                                  = [90mnull[0m[0m
+}

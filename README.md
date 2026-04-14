@@ -1,163 +1,106 @@
 # aws-autoscale-stack
 
-A production-style multi-tier application deployed on AWS using Terraform (IaC) and Ansible (configuration management), featuring auto-scaling based on CPU utilization.
+A production-style three-tier application on AWS — provisioned with Terraform, configured with Ansible, and auto-scaling under real load.
+
+![Terraform](https://img.shields.io/badge/Terraform-1.6+-7B42BC?logo=terraform&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-us--east--1-FF9900?logo=amazonaws&logoColor=white)
+![Ansible](https://img.shields.io/badge/Ansible-2.16+-EE0000?logo=ansible&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+
+---
+
+## What this project demonstrates
+
+- **Infrastructure as Code** — entire AWS stack in four modular Terraform modules; reproducible with a single `terraform apply`
+- **Configuration management** — Ansible over AWS SSM (no SSH, no port 22, no bastion) from a Docker-based Linux control node
+- **Auto-scaling** — CloudWatch alarm-based simple scaling; Flask tier scales from 2 → 6 instances under CPU load and back to 2 at rest
+- **Self-bootstrapping instances** — new ASG instances configure themselves at boot via `user_data` + `ansible-playbook localhost`, no manual intervention needed
+- **Least-privilege security** — custom IAM policy, private subnets for app and DB, security group chaining, Ansible Vault for secrets, RDS encryption at rest
+
+---
 
 ## Architecture
 
-```
-Internet
-   │
-   ▼
-[Nginx EC2]  ←── public subnet (reverse proxy + static frontend)
-   │
-   ▼
-[ALB]        ←── public subnets (routes /api/* to Flask)
-   │
-   ▼
-[ASG: Flask EC2 × 2–6]  ←── private subnets (auto-scales at 25% CPU target)
-   │
-   ▼
-[RDS MySQL]  ←── private subnets (accessible from Flask only)
-```
+![AWS Auto-Scale Stack Architecture](docs/architecture-diagrams.svg)
 
-**Stack:**
-- Cloud: AWS (us-east-1)
-- IaC: Terraform with S3 remote state
-- Config management: Ansible with dynamic EC2 inventory
-- App: Nginx → Flask (gunicorn) → RDS MySQL
-- Scaling: Target tracking at 25% ASG average CPU (min 2, max 6)
+---
 
-## Repository Structure
+## Stack
+
+| Layer | Technology | Detail |
+|---|---|---|
+| Cloud | AWS us-east-1 | VPC, ALB, ASG, RDS, SSM, CloudWatch |
+| IaC | Terraform 1.6+ | 4 modules · S3 remote state · DynamoDB lock |
+| Config | Ansible 2.16+ | Dynamic EC2 inventory · SSM connection · 3 roles |
+| App | Flask + gunicorn | 2 workers · systemd unit · `/health` + `/items` |
+| DB | RDS MySQL 8.0 | db.t3.micro · gp3 · encrypted · private subnet |
+| Scaling | CloudWatch alarms | CPU >20% → +1 · CPU <10% → −1 · 180s cooldown |
+
+---
+
+## Repository layout
 
 ```
 aws-autoscale-stack/
 ├── terraform/
-│   ├── main.tf                   # root module
-│   ├── variables.tf
-│   ├── outputs.tf                # alb_dns_name, nginx_public_ip, db_endpoint, asg_name
-│   ├── backend.tf                # S3 remote state
-│   ├── terraform.tfvars.example  # copy to terraform.tfvars — never commit
-│   └── modules/
-│       ├── networking/           # VPC, subnets, IGW, NAT, route tables
-│       ├── alb/                  # ALB, listener, target group
-│       ├── asg/                  # Launch template, ASG, scaling policy, Nginx EC2
-│       └── database/             # RDS MySQL, subnet group, security group
+│   ├── modules/
+│   │   ├── networking/   # VPC, subnets, IGW, NAT, route tables
+│   │   ├── alb/          # ALB, listener, target group
+│   │   ├── asg/          # Launch template, ASG, scaling policies, CloudWatch alarms
+│   │   └── database/     # RDS MySQL, subnet group, security group
+│   └── ...
 ├── ansible/
-│   ├── ansible.cfg
-│   ├── site.yml                  # master playbook
-│   ├── inventory/
-│   │   ├── aws_ec2.yml           # dynamic inventory (amazon.aws.aws_ec2 plugin)
-│   │   └── tf_outputs.json       # generated — not committed
-│   ├── group_vars/
-│   │   └── all.yml               # vars sourced from terraform outputs
-│   └── roles/
-│       ├── frontend/             # Nginx install + config + static HTML
-│       ├── app/                  # Flask + gunicorn + systemd unit
-│       └── db_init/              # MySQL seed (CREATE TABLE IF NOT EXISTS)
+│   ├── roles/
+│   │   ├── frontend/     # Nginx + reverse proxy config
+│   │   ├── app/          # Flask + gunicorn + systemd unit
+│   │   └── db_init/      # MySQL seed (idempotent)
+│   ├── Dockerfile.ansible
+│   └── with-docker-ansible.sh
 ├── scripts/
-│   ├── load_test.py              # load generator
-│   ├── collect_evidence.sh       # captures scaling evidence via AWS CLI
-│   └── README.md
-├── docs/
-│   ├── iam-policy.json           # least-privilege IAM policy for deployment user
-│   └── architecture.md           # architecture doc (PDF deliverable source)
-├── evidence/                     # screenshots + logs (not committed)
-├── .gitignore
-└── README.md
+│   ├── load_test.py      # 200-worker HTTP load generator
+│   └── collect_evidence.sh
+└── docs/
+    ├── architecture.md   # Full architecture doc + diagrams + evidence
+    ├── reflection.md     # Design decisions + lessons learned
+    ├── learnings.md      # Troubleshooting journal
+    └── iam-policy.json   # Least-privilege IAM policy
 ```
 
-## Prerequisites
+---
 
-| Tool | Version |
-|---|---|
-| Terraform | >= 1.6 |
-| Ansible | >= 2.16 |
-| AWS CLI | >= 2.x |
-| Python | >= 3.11 |
+## Quick start
 
-## Setup
-
-### 1. AWS IAM User
-
-Create an IAM user with the policy in [docs/iam-policy.json](docs/iam-policy.json) (least-privilege — scoped to EC2, ALB, ASG, RDS, and the state S3 bucket only).
-
-### 2. AWS CLI
+**Prerequisites:** Terraform ≥ 1.6, AWS CLI ≥ 2, Docker
 
 ```bash
-aws configure
-# Region: us-east-1 | Output: json
-aws sts get-caller-identity  # verify
-```
-
-### 3. S3 State Bucket
-
-Create `aws-autoscale-stack-tf-state-amogh` in us-east-1 with versioning enabled and public access blocked.
-
-### 4. SSM Session Manager
-
-Instances connect via AWS SSM — no SSH keys or open port 22 required. The IAM instance profile (`AmazonSSMManagedInstanceCore`) is attached automatically by Terraform.
-
-Install the SSM plugin locally if you want direct console access to instances:
-https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
-
-### 5. Terraform
-
-```bash
+# 1 — provision infrastructure
 cd terraform
-cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your db credentials
-terraform init
-terraform plan
-terraform apply 2>&1 | tee ../evidence/terraform_apply.log
+cp terraform.tfvars.example terraform.tfvars   # fill in db credentials
+terraform init && terraform apply
 terraform output -json > ../ansible/inventory/tf_outputs.json
+
+# 2 — configure instances (Docker required on macOS)
+cd ../ansible
+docker build -f Dockerfile.ansible -t capstone-ansible:ssm .
+./with-docker-ansible.sh ansible-playbook site.yml --ask-vault-pass
+
+# 3 — verify
+curl http://<alb_dns_name>/health   # → {"status":"ok"}
+curl http://<alb_dns_name>/items    # → JSON list from RDS
+
+# 4 — tear down (saves ~$3.10/day)
+cd ../terraform && terraform destroy
 ```
 
-### 6. Ansible
+> **Note:** Ansible must run via the Docker wrapper on macOS. The `amazon.aws.aws_ssm` connection plugin hangs indefinitely on macOS — see [docs/learnings.md](docs/learnings.md) for the root cause.
 
-```bash
-cd ansible
-docker build --no-cache -f Dockerfile.ansible -t capstone-ansible:ssm .
-./with-docker-ansible.sh ansible all -m ping -f 1
-./with-docker-ansible.sh ansible-playbook site.yml 2>&1 | tee ../evidence/ansible_run.log
-```
+---
 
-### 7. Verify
+## Docs
 
-```bash
-ALB=$(cat inventory/tf_outputs.json | python3 -c "import sys,json; print(json.load(sys.stdin)['alb_dns_name']['value'])")
-curl http://$ALB/items
-```
-
-## Load Testing
-
-```bash
-mkdir -p evidence
-bash scripts/collect_evidence.sh --duration 600 --interval 30
-python3 scripts/load_test.py \
-  --url http://<ALB-DNS>/items \
-  --workers 200 \
-  --duration 300 \
-  --progress-interval 15 \
-  --output evidence/load_test_results.json
-```
-
-Watch in AWS Console: EC2 → Auto Scaling Groups → your ASG → Activity tab.
-
-## Cost
-
-~$3.10/day while running. **Destroy when not working:**
-
-```bash
-cd terraform && terraform destroy
-```
-
-The S3 state bucket persists free between sessions. Re-apply takes ~10 minutes.
-
-## Design Decisions
-
-- **Private subnets for app + DB** — no direct internet exposure; all traffic routes through ALB or NAT
-- **Nginx as reverse proxy** — single public-facing EC2 serving static content and forwarding API traffic to the ALB
-- **Gunicorn over Flask dev server** — production-grade, handles concurrent connections
-- **Target tracking over step scaling** — AWS manages the math; simpler and more responsive
-- **NAT Gateway over NAT instance** — managed, no single-point-of-failure, no patching overhead
-- **`skip_final_snapshot = true`** — teardown environment; not appropriate for production
+| Document | What's in it |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Full architecture diagrams, Terraform module breakdown, Ansible roles, scaling policy, load test results + all screenshots |
+| [docs/reflection.md](docs/reflection.md) | Challenges, design decisions, IaC consistency, lessons learned |
+| [docs/learnings.md](docs/learnings.md) | Detailed troubleshooting journal — 14 discoveries from root cause to fix |
+| [docs/iam-policy.json](docs/iam-policy.json) | Least-privilege IAM policy for the deployment user |

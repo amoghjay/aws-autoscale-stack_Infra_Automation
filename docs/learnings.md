@@ -192,6 +192,26 @@ This avoids loading the repo inventory and SSM connection settings.
 - still reuses the real Ansible `app` role
 - still satisfies the goal of Ansible-based application configuration
 
+### How new app instances are configured
+
+The final model for scaled app instances is:
+
+- Git provides the application configuration code
+- Ansible performs the actual application setup
+- `user_data` only bootstraps enough for Ansible to run locally
+
+In practice, when a new app instance is launched by the ASG:
+
+1. the instance installs the required tools
+2. it discovers the current RDS endpoint
+3. it clones the Git repository locally
+4. it writes a tiny local bootstrap playbook and local Ansible config
+5. it runs `ansible-playbook` on `localhost`
+6. that local playbook applies the existing `app` role
+7. the `app` role installs dependencies, deploys the Flask app, creates the systemd service, and starts it
+
+This means the shell bootstrap does not hardcode the full app deployment. The actual app configuration still happens through Ansible, while Git is used to supply the Ansible role code to new instances.
+
 ## 8. How we proved the new bootstrap worked
 
 We manually tested the final localhost-only bootstrap on an unhealthy `v3` app instance through SSM.
