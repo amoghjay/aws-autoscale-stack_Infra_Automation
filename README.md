@@ -21,7 +21,7 @@ A production-style three-tier application on AWS — provisioned with Terraform,
 
 ## Architecture
 
-![AWS Auto-Scale Stack Architecture](docs/architecture-diagrams.svg)
+![AWS Auto-Scale Stack Architecture](docs/architecture-diagrams.png)
 
 ---
 
