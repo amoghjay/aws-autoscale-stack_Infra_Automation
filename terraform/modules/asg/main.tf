@@ -1,7 +1,3 @@
-data "aws_ssm_parameter" "al2023" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
-}
-
 # Security group for Flask app instances (private)
 resource "aws_security_group" "app_sg" {
   name        = "${var.project_name}-app-sg"
@@ -86,19 +82,28 @@ resource "aws_iam_role_policy" "ssm_s3_transport" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:DeleteObject"
-      ]
-      Resource = [
-        "arn:aws:s3:::${var.ssm_s3_bucket}",
-        "arn:aws:s3:::${var.ssm_s3_bucket}/*"
-      ]
-    }]
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.ssm_s3_bucket}",
+          "arn:aws:s3:::${var.ssm_s3_bucket}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "rds:DescribeDBInstances"
+        ]
+        Resource = "*"
+      }
+    ]
   })
 }
 
@@ -110,7 +115,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 # Launch template for ASG
 resource "aws_launch_template" "app" {
   name_prefix   = "${var.project_name}-lt-"
-  image_id      = data.aws_ssm_parameter.al2023.value
+  image_id      = var.app_ami_id
   instance_type = "t3.micro"
 
   iam_instance_profile {
@@ -122,13 +127,66 @@ resource "aws_launch_template" "app" {
     security_groups             = [aws_security_group.app_sg.id]
   }
 
-  user_data = base64encode(<<-EOF
+  user_data = base64encode(trimspace(<<-EOF
     #!/bin/bash
+    set -euxo pipefail
+
+    exec > >(tee /var/log/app-bootstrap.log | logger -t app-bootstrap -s 2>/dev/console) 2>&1
+
     dnf update -y
     dnf install -y python3 python3-pip git
-    pip3 install flask mysql-connector-python gunicorn
-  EOF
-  )
+    pip3 install ansible-core boto3 botocore
+
+    mkdir -p /etc/aws-autoscale-stack
+
+    DB_HOST="$(python3 - <<'PY'
+import time
+import boto3
+
+client = boto3.client("rds", region_name="${var.aws_region}")
+for _ in range(60):
+    response = client.describe_db_instances(DBInstanceIdentifier="${var.project_name}-mysql")
+    endpoint = response["DBInstances"][0].get("Endpoint", {}).get("Address")
+    if endpoint:
+        print(endpoint)
+        break
+    time.sleep(10)
+else:
+    raise SystemExit("Timed out waiting for RDS endpoint")
+PY
+)"
+
+    cat >/etc/aws-autoscale-stack/app-vars.yml <<APPVARS
+db_host: "$DB_HOST"
+db_user: "${var.db_username}"
+db_pass: "${var.db_password}"
+db_name: "appdb"
+flask_port: 5000
+APPVARS
+
+    git clone --depth 1 --branch "${var.app_bootstrap_repo_ref}" "${var.app_bootstrap_repo_url}" /opt/aws-autoscale-stack
+
+    cat >/etc/aws-autoscale-stack/bootstrap-app.yml <<'PLAYBOOK'
+---
+- name: Bootstrap app instance locally
+  hosts: localhost
+  connection: local
+  become: true
+  vars_files:
+    - /etc/aws-autoscale-stack/app-vars.yml
+  roles:
+    - app
+PLAYBOOK
+
+    cat >/etc/aws-autoscale-stack/bootstrap-ansible.cfg <<'ANSIBLECFG'
+[defaults]
+roles_path = /opt/aws-autoscale-stack/ansible/roles
+host_key_checking = False
+ANSIBLECFG
+
+    ANSIBLE_CONFIG=/etc/aws-autoscale-stack/bootstrap-ansible.cfg ansible-playbook -i localhost, -c local /etc/aws-autoscale-stack/bootstrap-app.yml
+EOF
+  ))
 
   tag_specifications {
     resource_type = "instance"
@@ -187,21 +245,21 @@ resource "aws_autoscaling_policy" "cpu_tracking" {
 
 # Nginx EC2 in public subnet
 resource "aws_instance" "nginx" {
-  ami                         = data.aws_ssm_parameter.al2023.value
+  ami                         = var.nginx_ami_id
   instance_type               = "t3.micro"
   subnet_id                   = var.public_subnet_ids[0]
   vpc_security_group_ids      = [aws_security_group.nginx_sg.id]
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
-  user_data = base64encode(<<-EOF
+  user_data = base64encode(trimspace(<<-EOF
     #!/bin/bash
     dnf update -y
     dnf install -y nginx python3 python3-pip
     pip3 install ansible boto3 botocore
     systemctl enable nginx
-  EOF
-  )
+EOF
+  ))
 
   tags = {
     Name = "${var.project_name}-nginx"

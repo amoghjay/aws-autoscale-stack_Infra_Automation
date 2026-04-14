@@ -1,78 +1,285 @@
-# Ansible SSM Debugging Learnings
+# Troubleshooting Learnings
 
-## Problem
+## 1. Ansible over SSM on macOS was the first blocker
 
-`aws ssm start-session` worked, instances were `Online` in Systems Manager, and `send-command` worked, but:
+### Symptom
+
+The instances were healthy in AWS, but:
 
 ```bash
 ansible all -m ansible.builtin.ping
 ```
 
-hung indefinitely on the control machine.
+hung on the control machine.
 
-## What Was Working
+### What was already working
 
-- EC2 instances were running.
-- Systems Manager showed all instances as `Online`.
-- `aws ssm start-session` connected successfully.
-- Direct boto3 `start_session()` worked.
+- All EC2 instances were running.
+- All instances were `Online` in Systems Manager.
+- `aws ssm start-session` worked.
+- `aws ssm send-command` worked.
 - The S3 bucket used by the Ansible SSM transport was reachable.
-- Remote hosts had `curl` and `python3`.
-- Ansible dynamic inventory loaded successfully.
+- boto3 `start_session()` worked directly.
 
-## What We Tried
+### What we tried
 
-- Confirmed SSM health with `aws ssm start-session` and `send-command`.
-- Confirmed S3 access with `aws s3api head-bucket`.
 - Tested one host at a time with `-l <instance-id>` and `-f 1`.
-- Forced `AWS_PROFILE`, disabled IMDS lookup, and reduced timeouts.
-- Removed misleading `remote_user` usage for `aws_ssm`.
-- Pinned `amazon.aws` and tested in a clean Python 3.13 virtualenv.
-- Instrumented the local `amazon.aws` collection to see exactly where it stalled.
+- Forced AWS profile and disabled IMDS lookup.
+- Verified S3 access with `aws s3api head-bucket`.
+- Checked `curl` and `python3` on the instances.
+- Tried different Ansible collection versions.
+- Instrumented the Ansible AWS SSM connection plugin.
 
-## Key Finding
+### What we found
 
-The hang was not on the EC2 instance or in SSM itself. It occurred on the macOS control machine inside Ansible's `amazon.aws.aws_ssm` connection plugin while initializing the S3 boto3 client used by the SSM transport.
+The problem was not AWS, IAM, SSM Agent, or the EC2 instances. The hang was on the macOS control machine inside Ansible's `amazon.aws.aws_ssm` connection flow.
 
-In other words:
+### Final fix
 
-- plain AWS CLI SSM worked
-- plain boto3 SSM worked
-- Ansible over `aws_ssm` on macOS did not
+We moved the Ansible controller into Docker and ran Ansible from Linux instead of directly on macOS.
 
-## Working Solution
+That solved the controller-side compatibility issue while keeping the same AWS inventory and SSM-based access model.
 
-Run Ansible from a Linux Docker container instead of directly on macOS.
+## 2. Docker Ansible uncovered two playbook issues
 
-Commands:
+Once Ansible itself worked through Docker, the playbook exposed two separate repo issues:
+
+### `json_query` filter problem
+
+`group_vars/all/vars.yml` used `json_query` to read `inventory/tf_outputs.json`.
+
+That failed in the Docker-based controller, so the lookups were changed to direct dictionary access.
+
+### MySQL client package problem
+
+The DB init role tried to install `mariadb`, which was not available on Amazon Linux 2023.
+
+It was changed to `mariadb105`.
+
+## 3. End-to-end app deployment worked before autoscaling validation
+
+After those fixes:
+
+- `ansible all -m ansible.builtin.ping -f 1` worked
+- `ansible-playbook site.yml` worked
+- the app responded through the ALB
+- the app responded through Nginx
+- `/health` and `/items` both worked
+- database seeding succeeded
+
+At that point, the basic infrastructure and configuration path were correct.
+
+## 4. First scaling test showed a design gap
+
+### What we expected
+
+When the ASG scaled out, new app instances should join the target group and become healthy automatically.
+
+### What actually happened
+
+The ASG did scale out, but the new instances were unhealthy and entered a replacement loop.
+
+That exposed a key design problem:
+
+- Ansible was only configuring the instances that existed when `site.yml` was run manually.
+- New ASG app instances did not automatically get the Flask app, systemd unit, or related configuration.
+
+So the stack could scale infrastructure, but not reliably scale configured application instances.
+
+## 5. Why DB seeding was not the right thing to put in scale-out bootstrap
+
+We reviewed the seeding flow in:
+
+- [site.yml](/Users/amoghjay/Desktop/Capstone_PRJ/aws-autoscale-stack/ansible/site.yml:1)
+- [roles/db_init/tasks/main.yml](/Users/amoghjay/Desktop/Capstone_PRJ/aws-autoscale-stack/ansible/roles/db_init/tasks/main.yml:1)
+- [roles/db_init/files/seed.sql](/Users/amoghjay/Desktop/Capstone_PRJ/aws-autoscale-stack/ansible/roles/db_init/files/seed.sql:1)
+
+Findings:
+
+- `db_init` is a separate play
+- it uses `run_once: true`
+- `seed.sql` uses `CREATE TABLE IF NOT EXISTS`
+- inserts are `INSERT IGNORE`
+
+That means rerunning the playbook does not duplicate the seed data, and it also means DB seeding should stay a central, one-time Ansible task, not part of app instance scale-out.
+
+Scaled app instances should only run the `app` role.
+
+## 6. First attempt: `ansible-pull`
+
+### Idea
+
+We first tried using `ansible-pull` in the app launch template so each new app instance could configure itself at boot.
+
+### What changed
+
+We updated the app launch template to:
+
+- install Ansible and boto3
+- discover the RDS endpoint at boot
+- clone the repo
+- run an Ansible bootstrap playbook
+
+### Problems found
+
+This approach exposed multiple issues in sequence:
+
+#### Problem 1: `user_data` script formatting
+
+Cloud-init showed:
+
+- `Exec format error. Missing #! in script?`
+
+Root cause:
+
+- the rendered `user_data` script was not starting cleanly with the shebang
+
+Fix:
+
+- corrected the Terraform heredoc rendering so the bootstrap shell script was valid
+
+#### Problem 2: missing bootstrap playbook in GitHub
+
+The instance cloned the repo from GitHub, but the bootstrap playbook existed only locally and had not been pushed.
+
+That meant:
+
+- the instance successfully cloned the repo
+- but failed because `ansible/bootstrap-app.yml` was not present in the remote repo
+
+#### Problem 3: repo Ansible config was wrong for localhost bootstrap
+
+Even after bypassing the missing file, local bootstrap still failed because the repo's Ansible config and group vars were intended for controller-side SSM runs.
+
+Important finding from [group_vars/all/vars.yml](/Users/amoghjay/Desktop/Capstone_PRJ/aws-autoscale-stack/ansible/group_vars/all/vars.yml:1):
+
+- `ansible_connection: amazon.aws.aws_ssm`
+
+That is correct for running Ansible from the control node to remote instances, but wrong for running Ansible locally on the EC2 instance itself.
+
+So a bootstrap playbook inside the repo's `ansible/` tree inherited the wrong connection assumptions.
+
+## 7. Final bootstrap design
+
+The clean solution was:
+
+- stop using `ansible-pull`
+- keep using the repo for the real `app` role code
+- run a tiny local bootstrap playbook on the instance with `ansible-playbook`
+
+### Final app boot flow
+
+The app launch template now:
+
+1. installs `python3`, `pip`, `git`, `ansible-core`, `boto3`, and `botocore`
+2. looks up the RDS endpoint with boto3
+3. writes app vars to `/etc/aws-autoscale-stack/app-vars.yml`
+4. clones the Git repo to `/opt/aws-autoscale-stack`
+5. writes a small local bootstrap playbook to `/etc/aws-autoscale-stack/bootstrap-app.yml`
+6. writes a small local Ansible config to `/etc/aws-autoscale-stack/bootstrap-ansible.cfg`
+7. runs local `ansible-playbook` on `localhost`
+
+The local config only points to:
+
+- `roles_path = /opt/aws-autoscale-stack/ansible/roles`
+
+This avoids loading the repo inventory and SSM connection settings.
+
+### Why this was better than `ansible-pull`
+
+- no dependence on a remote bootstrap playbook existing in GitHub
+- no accidental inheritance of `aws_ssm` connection settings
+- still reuses the real Ansible `app` role
+- still satisfies the goal of Ansible-based application configuration
+
+## 8. How we proved the new bootstrap worked
+
+We manually tested the final localhost-only bootstrap on an unhealthy `v3` app instance through SSM.
+
+The manual run succeeded:
+
+- the `app` role completed
+- `flask.service` was created
+- Flask started successfully
+
+Then we verified:
+
+- the repaired instance became `healthy` in the target group
+- both app instances were healthy at the same time
+- ALB `/health` returned `200 OK`
+- ALB `/items` returned the seeded items
+- local instance `127.0.0.1:5000/health` returned `200 OK`
+- local instance `127.0.0.1:5000/items` returned `200 OK`
+
+That proved the new bootstrap model was valid before applying it broadly.
+
+## 9. Terraform cleanup for a TA-friendly demo
+
+After stabilizing the app tier, the remaining Terraform noise was caused by image drift.
+
+The original config used the latest Amazon Linux 2023 AMI from SSM, which meant:
+
+- `terraform plan` kept detecting AMI changes over time
+- the Nginx instance wanted replacement unexpectedly
+
+### Final cleanup
+
+We pinned tested AMI IDs in Terraform:
+
+- app ASG AMI pinned to the working app instance generation
+- Nginx AMI pinned to the current working frontend instance
+
+That made the final Terraform plan much cleaner and more reproducible.
+
+## 10. Final operating model
+
+### Controller-side configuration
+
+Run Ansible from Docker using SSM:
 
 ```bash
 cd aws-autoscale-stack/ansible
-docker build --no-cache -f Dockerfile.ansible -t capstone-ansible:ssm .
 ./with-docker-ansible.sh ansible all -m ansible.builtin.ping -f 1
-./with-docker-ansible.sh ansible-playbook site.yml
+./with-docker-ansible.sh ansible-playbook site.yml --ask-vault-pass
 ```
 
-## Follow-up Fixes
+### App scale-out behavior
 
-After the Docker controller was working, two playbook issues also had to be corrected:
+New ASG app instances now self-bootstrap at launch by:
 
-- `group_vars/all/vars.yml` used the `json_query` filter to read `inventory/tf_outputs.json`. The Docker image did not include that filter dependency, so the lookups were changed to direct dictionary access.
-- `roles/db_init/tasks/main.yml` tried to install `mariadb`, which was not available on Amazon Linux 2023. This was updated to `mariadb105`.
+- cloning the repo
+- writing local bootstrap files
+- applying the existing `app` role locally
 
-## End-to-End Verification
+### DB seed behavior
 
-The final deployment was verified successfully:
+Database seeding remains:
 
-- `ansible all -m ansible.builtin.ping -f 1` worked through the Docker wrapper.
-- `ansible-playbook site.yml` completed successfully.
-- `vault.yml` could be used with `ansible-vault` through the Docker wrapper.
-- The Flask app responded correctly through the ALB DNS name.
-- The Nginx public IP served the frontend and proxied API requests correctly.
-- `/health` and `/items` worked from both `nginx_public_ip` and `alb_dns_name`.
-- The `/items` response confirmed that database seeding had completed successfully.
+- central
+- manual via `site.yml`
+- `run_once`
+- outside the scale-out path
 
-Useful verification commands:
+That is the correct separation of concerns.
+
+## 11. Final conclusion
+
+The autoscaling issue was not that AWS could not scale. The real issue was that new ASG instances were not receiving application configuration automatically.
+
+The final solution was to separate two concerns clearly:
+
+- use Docker-based Ansible over SSM from the control machine for normal configuration management
+- use a lightweight local Ansible bootstrap on new app instances so scaled instances can configure themselves at boot
+
+This produced a stable final state:
+
+- Terraform applies cleanly
+- Ansible works
+- app paths work through both ALB and Nginx
+- database seeding is safe and kept out of scale-out
+- new app instances can become healthy without manual intervention
+
+## 12. Useful verification commands
 
 ```bash
 ./with-docker-ansible.sh ansible all -m ansible.builtin.ping -f 1
@@ -81,18 +288,6 @@ curl http://<alb_dns_name>/health
 curl http://<alb_dns_name>/items
 curl http://<nginx_public_ip>/api/health
 curl http://<nginx_public_ip>/api/items
+aws elbv2 describe-target-health --target-group-arn <target-group-arn> --region us-east-1
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names aws-autoscale-stack-asg --region us-east-1
 ```
-
-## Important Docker Detail
-
-The Session Manager plugin path inside the container is:
-
-```bash
-/usr/local/sessionmanagerplugin/bin/session-manager-plugin
-```
-
-The wrapper script exports that path automatically, so the Ansible vars file should not hardcode a host-specific plugin path.
-
-## Report-Friendly Conclusion
-
-The root issue was a controller-side compatibility problem with Ansible's AWS SSM connection path on macOS, not an AWS infrastructure or IAM configuration failure. The final workaround was to move the Ansible control node into a Linux container, where the same inventory and AWS setup worked correctly.

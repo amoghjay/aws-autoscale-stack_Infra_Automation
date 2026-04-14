@@ -3,6 +3,21 @@ variable "project_name" {
   type        = string
 }
 
+variable "aws_region" {
+  description = "AWS region for runtime bootstrap lookups"
+  type        = string
+}
+
+variable "app_ami_id" {
+  description = "Pinned AMI ID for auto-scaled app instances"
+  type        = string
+}
+
+variable "nginx_ami_id" {
+  description = "Pinned AMI ID for the public Nginx instance"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "VPC ID"
   type        = string
@@ -33,3 +48,24 @@ variable "ssm_s3_bucket" {
   type        = string
 }
 
+variable "db_username" {
+  description = "RDS MySQL master username used by app bootstrap"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_password" {
+  description = "RDS MySQL master password used by app bootstrap"
+  type        = string
+  sensitive   = true
+}
+
+variable "app_bootstrap_repo_url" {
+  description = "HTTPS Git URL used by app-instance bootstrap on new app instances"
+  type        = string
+}
+
+variable "app_bootstrap_repo_ref" {
+  description = "Git ref used by app-instance bootstrap on new app instances"
+  type        = string
+}

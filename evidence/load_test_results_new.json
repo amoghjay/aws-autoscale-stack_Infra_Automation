@@ -1,0 +1,28 @@
+{
+  "url": "http://aws-autoscale-stack-alb-1462701993.us-east-1.elb.amazonaws.com/items",
+  "workers": 200,
+  "duration_seconds": 600,
+  "timeout_seconds": 5.0,
+  "ramp_seconds": 0,
+  "elapsed_seconds": 602.6,
+  "summary": {
+    "requests": 86143,
+    "success": 85765,
+    "errors": 378,
+    "status_codes": {
+      "200": 85765
+    },
+    "exceptions": {
+      "TimeoutError": 376,
+      "URLError": 2
+    },
+    "latency_ms": {
+      "min": 74.22,
+      "avg": 1378.57,
+      "p95": 2609.07,
+      "p99": 3451.04,
+      "max": 5037.56
+    }
+  },
+  "generated_at_epoch": 1776117800
+}
