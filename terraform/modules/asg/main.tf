@@ -207,6 +207,14 @@ resource "aws_autoscaling_group" "app" {
   target_group_arns         = [var.alb_target_group_arn]
   health_check_type         = "ELB"
   health_check_grace_period = 300
+  metrics_granularity       = "1Minute"
+  enabled_metrics = [
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances",
+  ]
 
   launch_template {
     id      = aws_launch_template.app.id
@@ -226,21 +234,58 @@ resource "aws_autoscaling_group" "app" {
   }
 }
 
-# Target tracking scaling policy — tuned to 25% CPU for this lightweight demo workload
-resource "aws_autoscaling_policy" "cpu_tracking" {
-  name                   = "${var.project_name}-cpu-tracking"
+# Simple demo-friendly scaling: add 1 instance when ASG average CPU is high,
+# remove 1 instance when it stays low for long enough.
+resource "aws_autoscaling_policy" "scale_out" {
+  name                   = "${var.project_name}-scale-out"
   autoscaling_group_name = aws_autoscaling_group.app.name
-  policy_type            = "TargetTrackingScaling"
+  policy_type            = "SimpleScaling"
+  adjustment_type        = "ChangeInCapacity"
+  scaling_adjustment     = 1
+  cooldown               = 180
+}
 
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
-    }
-    target_value     = 25.0
-    disable_scale_in = false
+resource "aws_autoscaling_policy" "scale_in" {
+  name                   = "${var.project_name}-scale-in"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  policy_type            = "SimpleScaling"
+  adjustment_type        = "ChangeInCapacity"
+  scaling_adjustment     = -1
+  cooldown               = 180
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  alarm_name          = "${var.project_name}-cpu-high"
+  alarm_description   = "Scale out by 1 when ASG average CPU stays above 20%"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 20
+  alarm_actions       = [aws_autoscaling_policy.scale_out.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.app.name
   }
+}
 
-  estimated_instance_warmup = 300
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+  alarm_name          = "${var.project_name}-cpu-low"
+  alarm_description   = "Scale in by 1 when ASG average CPU stays below 10%"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 3
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 10
+  alarm_actions       = [aws_autoscaling_policy.scale_in.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.app.name
+  }
 }
 
 # Nginx EC2 in public subnet

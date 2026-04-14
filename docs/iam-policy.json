@@ -62,9 +62,12 @@
         "iam:CreateRole",
         "iam:DeleteRole",
         "iam:GetRole",
+        "iam:GetRolePolicy",
         "iam:PassRole",
         "iam:AttachRolePolicy",
         "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
         "iam:CreateInstanceProfile",
         "iam:DeleteInstanceProfile",
         "iam:GetInstanceProfile",
@@ -114,7 +117,9 @@
         "ssm:ListDocuments",
         "ssm:GetDocument",
         "ssm:SendCommand",
-        "ssm:GetCommandInvocation"
+        "ssm:GetCommandInvocation",
+        "ssm:ListCommands",
+        "ssm:ListCommandInvocations"
       ],
       "Resource": "*"
     },
@@ -143,13 +148,18 @@
       "Resource": "*"
     },
     {
-      "Sid": "CloudWatchReadOnly",
+      "Sid": "CloudWatchMetricsAndAlarms",
       "Effect": "Allow",
       "Action": [
         "cloudwatch:GetMetricData",
         "cloudwatch:GetMetricStatistics",
         "cloudwatch:ListMetrics",
-        "cloudwatch:DescribeAlarms"
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:PutMetricAlarm",
+        "cloudwatch:DeleteAlarms",
+        "cloudwatch:ListTagsForResource",
+        "cloudwatch:TagResource",
+        "cloudwatch:UntagResource"
       ],
       "Resource": "*"
     },

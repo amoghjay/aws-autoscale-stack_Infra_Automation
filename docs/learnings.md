@@ -213,7 +213,35 @@ Then we verified:
 
 That proved the new bootstrap model was valid before applying it broadly.
 
-## 9. Terraform cleanup for a TA-friendly demo
+## 9. Safer validation than waiting for a scale-out event
+
+After stabilizing the environment, we used a cleaner validation method than waiting for a high-load scale-out event:
+
+- we replaced one healthy old app instance at a time
+- the other healthy app instance remained in service
+- the ASG launched a fresh replacement from the latest launch template
+- we watched the replacement move through registration to `healthy`
+
+### What this taught us
+
+- the new bootstrap path works without manual intervention
+- a replacement instance can configure itself and become healthy on its own
+- the app tier remains available during rolling replacement
+- the first health or SSM check can be too early, because bootstrap is asynchronous
+
+In one test:
+
+- the first SSM check ran too soon and `flask.service` was not visible yet
+- after a short wait, the replacement instance completed bootstrap and became `healthy`
+
+That was an important finding:
+
+- the right success criterion is not "is the instance instantly ready?"
+- the right success criterion is "does the replacement instance become healthy on its own after bootstrapping?"
+
+This one-at-a-time replacement method is a safer validation pattern than discovering bootstrap problems for the first time during a full load-based scale-out event.
+
+## 10. Terraform cleanup for a TA-friendly demo
 
 After stabilizing the app tier, the remaining Terraform noise was caused by image drift.
 
@@ -231,7 +259,87 @@ We pinned tested AMI IDs in Terraform:
 
 That made the final Terraform plan much cleaner and more reproducible.
 
-## 10. Final operating model
+## 11. Scaling policy tuning and final demo behavior
+
+### First autoscaling policy behavior
+
+The initial autoscaling approach used target tracking based on average CPU utilization.
+
+That policy did scale out successfully, but it was not ideal for demonstration:
+
+- it could jump capacity more aggressively than expected
+- scale-in behavior was slower and less predictable
+- it was harder to explain clearly in a live demo
+
+### Why we changed it
+
+For the capstone demonstration, the goal was not just that autoscaling worked, but that it could be shown clearly and explained simply.
+
+We therefore changed the ASG policy from target tracking to explicit alarm-based simple scaling:
+
+- scale out by `+1`
+- scale in by `-1`
+
+### Final scaling policy design
+
+We replaced target tracking with:
+
+- a high CPU CloudWatch alarm
+- a low CPU CloudWatch alarm
+- a scale-out simple scaling policy
+- a scale-in simple scaling policy
+
+Final thresholds:
+
+- scale out when average CPU is above `20%`
+- scale in when average CPU is below `10%`
+- CloudWatch period: `60s`
+- scale-out evaluation periods: `2`
+- scale-in evaluation periods: `3`
+- cooldown: `180s`
+
+### Why those numbers were chosen
+
+They were chosen from observed CloudWatch behavior during real tests:
+
+- under sustained load, the app tier clearly exceeded `20%` average CPU
+- after the load test stopped, the CPU dropped near idle
+
+So these thresholds were based on observed metrics, not arbitrary guesses.
+
+### IAM learning from this change
+
+Switching to CloudWatch-alarm-based scaling required extra permissions that were not originally present on the project admin user.
+
+Missing permissions included:
+
+- `cloudwatch:PutMetricAlarm`
+- `cloudwatch:DeleteAlarms`
+- `cloudwatch:DescribeAlarms`
+- `cloudwatch:ListTagsForResource`
+- `cloudwatch:TagResource`
+- `cloudwatch:UntagResource`
+
+Additional IAM/SSM permissions were also added to better match the real Terraform and debugging workflow:
+
+- `iam:GetRolePolicy`
+- `iam:PutRolePolicy`
+- `iam:DeleteRolePolicy`
+- `ssm:ListCommands`
+- `ssm:ListCommandInvocations`
+
+### Final result of the alarm-based scaling demo
+
+With the new scaling model:
+
+- the ASG scaled out in clearer step-based increments
+- load testing showed capacity increasing up to 5 instances during the final demo run
+- scale-out behavior was easier to observe and explain
+- low CPU alarm behavior after the test matched the intended scale-in trigger conditions
+
+This was a better fit for demonstration than the earlier target-tracking behavior.
+
+## 12. Final operating model
 
 ### Controller-side configuration
 
@@ -262,7 +370,7 @@ Database seeding remains:
 
 That is the correct separation of concerns.
 
-## 11. Final conclusion
+## 13. Final conclusion
 
 The autoscaling issue was not that AWS could not scale. The real issue was that new ASG instances were not receiving application configuration automatically.
 
@@ -278,8 +386,9 @@ This produced a stable final state:
 - app paths work through both ALB and Nginx
 - database seeding is safe and kept out of scale-out
 - new app instances can become healthy without manual intervention
+- scaling behavior can be demonstrated more clearly with explicit alarm-based `+1 / -1` policies
 
-## 12. Useful verification commands
+## 14. Useful verification commands
 
 ```bash
 ./with-docker-ansible.sh ansible all -m ansible.builtin.ping -f 1
